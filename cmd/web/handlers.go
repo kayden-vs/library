@@ -146,6 +146,12 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/books", http.StatusSeeOther)
 }
 
+func (app *application) userLogoutConfirm(w http.ResponseWriter, r *http.Request) {
+	app.RenderPage(w, r, func(flash string, isAuthenticated bool, csrfToken string) templ.Component {
+		return pages.LogoutPage(csrfToken, isAuthenticated)
+	})
+}
+
 func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
 	err := app.sessionManager.RenewToken(r.Context())
 	if err != nil {
@@ -161,7 +167,7 @@ func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	app.RenderPage(w, r, func(flash string, isAuthenticated bool, csrfToken string) templ.Component {
-		return pages.HomePage(flash, isAuthenticated)
+		return pages.HomePage(flash, isAuthenticated, csrfToken)
 	})
 }
 
@@ -397,7 +403,7 @@ func (app *application) allIssues(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	app.RenderPage(w, r, func(flash string, isAuthenticated bool, csrfToken string) templ.Component {
-		return pages.AllIssuesPage(issues, flash, isAuthenticated)
+		return pages.AllIssuesPage(issues, flash, isAuthenticated, csrfToken)
 	})
 }
 

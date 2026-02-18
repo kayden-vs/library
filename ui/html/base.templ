@@ -12,15 +12,12 @@ templ Base(title string, flash string, isAuthenticated bool, csrfToken string, c
 <body>
     <header>
         <div class="header-inner">
-            <a href="/" class="logo">📚 LibraryMS</a>
+            <a href="/" class="logo">LibraryMS</a>
             <nav>
                 <a href="/books">Books</a>
                 if isAuthenticated {
                     <a href="/my-books">My Books</a>
-                    <form action="/user/logout" method="POST" style="display: inline;">
-                        <input type="hidden" name="csrf_token" value={csrfToken}/>
-                        <button type="submit" class="btn-nav">Logout</button>
-                    </form>
+                    <a href="/user/logout-confirm" class="btn-nav">Logout</a>
                 } else {
                     <a href="/user/signup">Sign Up</a>
                     <a href="/user/login">Login</a>

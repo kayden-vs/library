@@ -1,0 +1,19 @@
+package pages
+
+import "github.com/kayden-vs/library/ui/html"
+
+templ LogoutPage(csrfToken string, isAuthenticated bool) {
+    @html.Base("Logout", "", isAuthenticated, csrfToken, logoutContent(csrfToken))
+}
+
+templ logoutContent(csrfToken string) {
+    <div class="container form-container">
+        <h2>Log Out</h2>
+        <p>Are you sure you want to log out?</p>
+        <form action="/user/logout" method="POST">
+            <input type="hidden" name="csrf_token" value={csrfToken}/>
+            <button type="submit" class="btn">Yes, log out</button>
+            <a href="/" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+}

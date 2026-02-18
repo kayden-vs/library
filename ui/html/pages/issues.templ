@@ -5,8 +5,8 @@ import (
     "github.com/kayden-vs/library/ui/html"
 )
 
-templ AllIssuesPage(issues []*models.Issue, flash string, isAuthenticated bool) {
-    @html.Base("All Issues", flash, isAuthenticated, "", allIssuesContent(issues))
+templ AllIssuesPage(issues []*models.Issue, flash string, isAuthenticated bool, csrfToken string) {
+    @html.Base("All Issues", flash, isAuthenticated, csrfToken, allIssuesContent(issues))
 }
 
 templ allIssuesContent(issues []*models.Issue) {

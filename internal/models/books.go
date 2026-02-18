@@ -55,7 +55,12 @@ func (m *BookModel) Get(id int) (*Book, error) {
 }
 
 func (m *BookModel) Delete(id int) error {
-	_, err := m.DB.Exec("DELETE FROM books WHERE id = ?", id)
+	// remove issues first to satisfy FK constraint
+	_, err := m.DB.Exec("DELETE FROM issues WHERE book_id = ?", id)
+	if err != nil {
+		return err
+	}
+	_, err = m.DB.Exec("DELETE FROM books WHERE id = ?", id)
 	return err
 }
 

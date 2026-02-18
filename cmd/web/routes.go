@@ -44,6 +44,7 @@ func (app *application) routes() http.Handler {
 			r.Use(app.requireAuthentication)
 
 			r.Post("/user/logout", app.userLogoutPost)
+			r.Get("/user/logout-confirm", app.userLogoutConfirm)
 
 			r.Get("/my-books", app.myBooks)
 			r.Post("/books/{id}/issue", app.issueBookPost)

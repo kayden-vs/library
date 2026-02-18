@@ -2,14 +2,14 @@ package pages
 
 import "github.com/kayden-vs/library/ui/html"
 
-templ HomePage(flash string, isAuthenticated bool) {
-    @html.Base("Home", flash, isAuthenticated, "", homeContent(isAuthenticated))
+templ HomePage(flash string, isAuthenticated bool, csrfToken string) {
+    @html.Base("Home", flash, isAuthenticated, csrfToken, homeContent(isAuthenticated))
 }
 
 templ homeContent(isAuthenticated bool) {
     <div class="hero">
         <h1>Welcome to LibraryMS</h1>
-        <p>Search, borrow, and return books — all in one place.</p>
+        <p>Search, borrow, and return books - all in one place.</p>
         <div class="hero-actions">
             <a href="/books" class="btn">Browse Books</a>
             if !isAuthenticated {
