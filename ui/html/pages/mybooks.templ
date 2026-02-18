@@ -1,0 +1,47 @@
+package pages
+
+import (
+    "fmt"
+    "github.com/kayden-vs/library/internal/models"
+    "github.com/kayden-vs/library/ui/html"
+)
+
+templ MyBooksPage(issues []*models.Issue, flash string, isAuthenticated bool, csrfToken string) {
+    @html.Base("My Books", flash, isAuthenticated, csrfToken, myBooksContent(issues, csrfToken))
+}
+
+templ myBooksContent(issues []*models.Issue, csrfToken string) {
+    <div class="container">
+        <h2>My Issued Books</h2>
+
+        if len(issues) == 0 {
+            <p class="empty-msg">You have no books currently issued. <a href="/books">Browse the catalogue</a>.</p>
+        } else {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Book</th>
+                        <th>Issued On</th>
+                        <th>Due Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    for _, iss := range issues {
+                        <tr>
+                            <td>{iss.BookTitle}</td>
+                            <td>{iss.IssuedAt.Format("02 Jan 2006")}</td>
+                            <td>{iss.DueDate.Format("02 Jan 2006")}</td>
+                            <td>
+                                <form action={templ.SafeURL(fmt.Sprintf("/issues/%d/return", iss.ID))} method="POST">
+                                    <input type="hidden" name="csrf_token" value={csrfToken}/>
+                                    <button type="submit" class="btn btn-sm">Return</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+}

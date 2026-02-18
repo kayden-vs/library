@@ -1,0 +1,60 @@
+package pages
+
+import "github.com/kayden-vs/library/ui/html"
+
+type BookFormParams struct {
+    Title       string
+    Author      string
+    ISBN        string
+    Copies      string
+    FieldErrors map[string]string
+    CSRFToken   string
+}
+
+templ BookFormPage(props BookFormParams, flash string, isAuthenticated bool) {
+    @html.Base("Add Book", flash, isAuthenticated, props.CSRFToken, bookFormContent(props))
+}
+
+templ bookFormContent(props BookFormParams) {
+    <div class="container form-container">
+        <h2>Add New Book</h2>
+        <form action="/books/new" method="POST" novalidate>
+            <input type="hidden" name="csrf_token" value={props.CSRFToken}/>
+
+            <div class="form-group">
+                <label>Title</label>
+                if props.FieldErrors["title"] != "" {
+                    <span class="error">{props.FieldErrors["title"]}</span>
+                }
+                <input type="text" name="title" value={props.Title}/>
+            </div>
+
+            <div class="form-group">
+                <label>Author</label>
+                if props.FieldErrors["author"] != "" {
+                    <span class="error">{props.FieldErrors["author"]}</span>
+                }
+                <input type="text" name="author" value={props.Author}/>
+            </div>
+
+            <div class="form-group">
+                <label>ISBN</label>
+                if props.FieldErrors["isbn"] != "" {
+                    <span class="error">{props.FieldErrors["isbn"]}</span>
+                }
+                <input type="text" name="isbn" value={props.ISBN}/>
+            </div>
+
+            <div class="form-group">
+                <label>Number of Copies</label>
+                if props.FieldErrors["copies"] != "" {
+                    <span class="error">{props.FieldErrors["copies"]}</span>
+                }
+                <input type="number" name="copies" value={props.Copies} min="1"/>
+            </div>
+
+            <button type="submit" class="btn">Add Book</button>
+            <a href="/books" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+}

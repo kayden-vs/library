@@ -1,0 +1,59 @@
+package pages
+
+import (
+    "fmt"
+    "github.com/kayden-vs/library/internal/models"
+    "github.com/kayden-vs/library/ui/html"
+)
+
+templ AdminUsersPage(users []*models.User, flash string, isAuthenticated bool, csrfToken string) {
+    @html.Base("Admin - Users", flash, isAuthenticated, csrfToken, adminUsersContent(users, csrfToken))
+}
+
+templ adminUsersContent(users []*models.User, csrfToken string) {
+    <div class="container">
+        <h2>Manage Users</h2>
+        <p class="subtext">Promote students to librarian role here.</p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                for _, u := range users {
+                    <tr>
+                        <td>{fmt.Sprintf("%d", u.ID)}</td>
+                        <td>{u.Name}</td>
+                        <td>{u.Email}</td>
+                        <td><span class={roleClass(u.Role)}>{u.Role}</span></td>
+                        <td>
+                            if u.Role == "student" {
+                                <form action={templ.SafeURL(fmt.Sprintf("/admin/users/%d/promote", u.ID))} method="POST">
+                                    <input type="hidden" name="csrf_token" value={csrfToken}/>
+                                    <button type="submit" class="btn btn-sm">Make Librarian</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+func roleClass(role string) string {
+    switch role {
+    case "admin":
+        return "badge badge-admin"
+    case "librarian":
+        return "badge badge-librarian"
+    default:
+        return "badge badge-student"
+    }
+}

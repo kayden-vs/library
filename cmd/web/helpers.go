@@ -70,3 +70,22 @@ func (app *application) isAuthenticated(r *http.Request) bool {
 	}
 	return isAuthenticated
 }
+
+func (app *application) getUserID(r *http.Request) int {
+	id, _ := r.Context().Value(authenticatedUserIDKey).(int)
+	return id
+}
+
+func (app *application) getUserRole(r *http.Request) string {
+	role, _ := r.Context().Value(userRoleContextKey).(string)
+	return role
+}
+
+func (app *application) isLibrarian(r *http.Request) bool {
+	role := app.getUserRole(r)
+	return role == "librarian" || role == "admin"
+}
+
+func (app *application) isAdmin(r *http.Request) bool {
+	return app.getUserRole(r) == "admin"
+}

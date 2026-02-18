@@ -11,27 +11,31 @@ templ Base(title string, flash string, isAuthenticated bool, csrfToken string, c
 </head>
 <body>
     <header>
-        <nav>
-            <a href="/">Home</a>
-            if isAuthenticated {
-                <form action="/user/logout" method="POST" style="display: inline;">
-                    <input type="hidden" name="csrf_token" value={csrfToken}/>
-                    <button type="submit">Logout</button>
-                </form>
-            } else {
-                <a href="/user/signup">Sign Up</a>
-                <a href="/user/login">Login</a>
-            }
-        </nav>
+        <div class="header-inner">
+            <a href="/" class="logo">📚 LibraryMS</a>
+            <nav>
+                <a href="/books">Books</a>
+                if isAuthenticated {
+                    <a href="/my-books">My Books</a>
+                    <form action="/user/logout" method="POST" style="display: inline;">
+                        <input type="hidden" name="csrf_token" value={csrfToken}/>
+                        <button type="submit" class="btn-nav">Logout</button>
+                    </form>
+                } else {
+                    <a href="/user/signup">Sign Up</a>
+                    <a href="/user/login">Login</a>
+                }
+            </nav>
+        </div>
     </header>
-    
+
     <main>
         if flash != "" {
             <div class="flash">{flash}</div>
         }
         @content
     </main>
-    
+
     <footer>
         <p>&copy; 2026 Library Management System</p>
     </footer>

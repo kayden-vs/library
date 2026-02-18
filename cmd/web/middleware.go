@@ -10,7 +10,6 @@ import (
 
 func secureHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Relaxed CSP for trade pages that need TradingView widget
 		if strings.HasPrefix(r.URL.Path, "/trade/") {
 			w.Header().Set("Content-Security-Policy",
 				"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://s3.tradingview.com https://*.tradingview.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src fonts.gstatic.com; frame-src https://*.tradingview.com; connect-src 'self' https://*.tradingview.com wss://*.tradingview.com; img-src 'self' data: https://*.tradingview.com")
@@ -33,9 +32,28 @@ func (app *application) requireAuthentication(next http.Handler) http.Handler {
 			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 			return
 		}
-
 		w.Header().Add("Cache-Control", "no-store")
+		next.ServeHTTP(w, r)
+	})
+}
 
+func (app *application) requireLibrarian(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		role := app.getUserRole(r)
+		if role != "librarian" && role != "admin" {
+			app.clientError(w, http.StatusForbidden)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (app *application) requireAdmin(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if app.getUserRole(r) != "admin" {
+			app.clientError(w, http.StatusForbidden)
+			return
+		}
 		next.ServeHTTP(w, r)
 	})
 }
@@ -47,7 +65,6 @@ func noSurf(next http.Handler) http.Handler {
 		Path:     "/",
 		Secure:   true,
 	})
-
 	return csrfHandler
 }
 
@@ -65,8 +82,14 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 			return
 		}
 		if exists {
+			role, err := app.users.GetRole(id)
+			if err != nil {
+				app.serverError(w, err)
+				return
+			}
 			ctx := context.WithValue(r.Context(), isAuthenticatedContextKey, true)
-			ctx = context.WithValue(ctx, authenticatedUserIDKey, id) // Add userID too
+			ctx = context.WithValue(ctx, authenticatedUserIDKey, id)
+			ctx = context.WithValue(ctx, userRoleContextKey, role)
 			r = r.WithContext(ctx)
 		}
 

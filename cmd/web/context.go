@@ -4,5 +4,6 @@ type contextKey string
 
 const (
 	isAuthenticatedContextKey = contextKey("isAuthenticated")
-	authenticatedUserIDKey    = contextKey("authenticatedUserID") // Add this
+	authenticatedUserIDKey    = contextKey("authenticatedUserID")
+	userRoleContextKey        = contextKey("userRole")
 )

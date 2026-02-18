@@ -1,0 +1,70 @@
+package pages
+
+import (
+    "fmt"
+    "github.com/kayden-vs/library/internal/models"
+    "github.com/kayden-vs/library/ui/html"
+)
+
+templ BookListPage(books []*models.Book, query string, flash string, isAuthenticated bool, isLibrarian bool, csrfToken string) {
+    @html.Base("Books", flash, isAuthenticated, csrfToken, bookListContent(books, query, isAuthenticated, isLibrarian, csrfToken))
+}
+
+templ bookListContent(books []*models.Book, query string, isAuthenticated bool, isLibrarian bool, csrfToken string) {
+    <div class="container">
+        <div class="page-header">
+            <h2>Book Catalogue</h2>
+            if isLibrarian {
+                <a href="/books/new" class="btn">+ Add Book</a>
+            }
+        </div>
+
+        <form class="search-form" action="/books" method="GET">
+            <input type="text" name="q" placeholder="Search by title, author or ISBN" value={query}/>
+            <button type="submit" class="btn">Search</button>
+            if query != "" {
+                <a href="/books" class="btn btn-secondary">Clear</a>
+            }
+        </form>
+
+        if len(books) == 0 {
+            <p class="empty-msg">No books found.</p>
+        } else {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>ISBN</th>
+                        <th>Available</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    for _, b := range books {
+                        <tr>
+                            <td>{b.Title}</td>
+                            <td>{b.Author}</td>
+                            <td>{b.ISBN}</td>
+                            <td>{fmt.Sprintf("%d / %d", b.AvailableCopies, b.TotalCopies)}</td>
+                            <td class="actions">
+                                if isAuthenticated && b.AvailableCopies > 0 {
+                                    <form action={templ.SafeURL(fmt.Sprintf("/books/%d/issue", b.ID))} method="POST">
+                                        <input type="hidden" name="csrf_token" value={csrfToken}/>
+                                        <button type="submit" class="btn btn-sm">Issue</button>
+                                    </form>
+                                }
+                                if isLibrarian {
+                                    <form action={templ.SafeURL(fmt.Sprintf("/books/%d/delete", b.ID))} method="POST" onsubmit="return confirm('Delete this book?')">
+                                        <input type="hidden" name="csrf_token" value={csrfToken}/>
+                                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+}

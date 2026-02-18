@@ -19,6 +19,8 @@ type application struct {
 	errorLog       *log.Logger
 	infoLog        *log.Logger
 	users          models.UserModelInterface
+	books          models.BookModelInterface
+	issues         models.IssueModelInterface
 	formDecoder    *form.Decoder
 	sessionManager *scs.SessionManager
 }
@@ -48,6 +50,8 @@ func main() {
 		errorLog:       errorLog,
 		infoLog:        infoLog,
 		users:          &models.UserModel{DB: db},
+		books:          &models.BookModel{DB: db},
+		issues:         &models.IssueModel{DB: db},
 		formDecoder:    formDecoder,
 		sessionManager: sessionManager,
 	}

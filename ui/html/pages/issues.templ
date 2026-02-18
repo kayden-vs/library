@@ -1,0 +1,49 @@
+package pages
+
+import (
+    "github.com/kayden-vs/library/internal/models"
+    "github.com/kayden-vs/library/ui/html"
+)
+
+templ AllIssuesPage(issues []*models.Issue, flash string, isAuthenticated bool) {
+    @html.Base("All Issues", flash, isAuthenticated, "", allIssuesContent(issues))
+}
+
+templ allIssuesContent(issues []*models.Issue) {
+    <div class="container">
+        <h2>All Issued Books</h2>
+
+        if len(issues) == 0 {
+            <p class="empty-msg">No issues records.</p>
+        } else {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Book</th>
+                        <th>Student</th>
+                        <th>Issued On</th>
+                        <th>Due Date</th>
+                        <th>Returned</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    for _, iss := range issues {
+                        <tr>
+                            <td>{iss.BookTitle}</td>
+                            <td>{iss.UserName}</td>
+                            <td>{iss.IssuedAt.Format("02 Jan 2006")}</td>
+                            <td>{iss.DueDate.Format("02 Jan 2006")}</td>
+                            <td>
+                                if iss.ReturnedAt != nil {
+                                    {iss.ReturnedAt.Format("02 Jan 2006")}
+                                } else {
+                                    <span class="badge-active">Active</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+}
