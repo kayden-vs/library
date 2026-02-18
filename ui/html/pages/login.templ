@@ -1,0 +1,40 @@
+package pages
+
+import "github.com/kayden-vs/library/ui/html"
+
+type LoginFormParams struct {
+    Email               string
+    FieldErrors map[string]string
+    NonFieldErrors []string
+    CSRFToken string
+}
+
+templ LoginPage(props LoginFormParams, flash string, isAuthenticated bool){
+    @html.Base("Login", flash,isAuthenticated, props.CSRFToken, Login(props)) 
+}
+
+templ Login(props LoginFormParams){
+    <form action='/user/login' method='POST' novalidate>
+        <input type='hidden' name='csrf_token' value={ props.CSRFToken }/>
+        for _,v := range props.NonFieldErrors{
+            <div class='error'>{ v }</div>
+        }
+        <div>
+            <label>Email:</label>
+            if props.FieldErrors["email"] != ""{
+                <label class='error'>{ props.FieldErrors["email"] }</label>
+            }
+            <input type='email' name='email' value={ props.Email }>
+        </div>
+        <div>
+            <label>Password:</label>
+            if props.FieldErrors["password"] != ""{
+                <label class='error'>{ props.FieldErrors["password"] }</label>
+            }
+            <input type='password' name='password'>
+        </div>
+        <div>
+            <input type='submit' value='Login'>
+        </div>
+    </form>
+}

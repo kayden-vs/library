@@ -1,0 +1,44 @@
+package pages
+
+import "github.com/kayden-vs/library/ui/html"
+
+type SignupFormParams struct {
+	Name   string
+	Email  string
+	FieldErrors map[string]string
+	CSRFToken string
+}
+
+templ SignupPage(props SignupFormParams, isAuthenticated bool){
+	@html.Base("Sign Up", "",isAuthenticated, props.CSRFToken, Signup(props))
+}
+
+templ Signup(props SignupFormParams) {
+	<form action="/user/signup" method="POST" novalidate>
+		<input type='hidden' name='csrf_token' value={ props.CSRFToken }/>
+		<div>
+			<label for="name">Name:</label>
+			if props.FieldErrors["name"] != "" {
+				<label class="error">{ props.FieldErrors["name"] }</label>
+			}
+			<input type="text" id="name" name="name" value={ props.Name }/>
+		</div>
+		<div>
+			<label for="email">Email:</label>
+			if props.FieldErrors["email"] != "" {
+				<label class="error">{ props.FieldErrors["email"] }</label>
+			}
+			<input type="email" id="email" name="email" value={ props.Email }/>
+		</div>
+		<div>
+			<label for="password">Password:</label>
+			if props.FieldErrors["password"] != "" {
+				<label class="error">{ props.FieldErrors["password"] }</label>
+			}
+			<input type="password" id="password" name="password"/>
+		</div>
+		<div>
+			<input type="submit" value="Signup"/>
+		</div>
+	</form>
+}
