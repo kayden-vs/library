@@ -27,7 +27,7 @@ type application struct {
 
 func main() {
 	addr := flag.String("addr", ":4000", "HTTP server port")
-	dsn := flag.String("dsn", "library_user:eren@tcp(localhost:3306)/library?parseTime=true", "MySQL data source name")
+	dsn := flag.String("dsn", "library_user:eren@tcp(localhost:3306)/library?parseTime=true&multiStatements=true", "MySQL data source name")
 
 	flag.Parse()
 

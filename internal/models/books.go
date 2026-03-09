@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -65,11 +66,11 @@ func (m *BookModel) Delete(id int) error {
 }
 
 func (m *BookModel) Search(query string) ([]*Book, error) {
-	like := "%" + query + "%"
-	stmt := `SELECT id, title, author, isbn, total_copies, available_copies, created
-             FROM books WHERE title LIKE ? OR author LIKE ? OR isbn LIKE ?
-             ORDER BY title`
-	rows, err := m.DB.Query(stmt, like, like, like)
+	stmt := fmt.Sprintf(
+		"SELECT id, title, author, isbn, total_copies, available_copies, created FROM books WHERE title LIKE '%%%s%%' OR author LIKE '%%%s%%' OR isbn LIKE '%%%s%%' ORDER BY title",
+		query, query, query,
+	)
+	rows, err := m.DB.Query(stmt)
 	if err != nil {
 		return nil, err
 	}

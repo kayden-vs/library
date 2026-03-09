@@ -177,20 +177,24 @@ func (app *application) bookList(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
 	var books []*models.Book
 	var err error
+	var sqlErr string
 
 	if query != "" {
 		books, err = app.books.Search(query)
+		if err != nil {
+			sqlErr = err.Error()
+		}
 	} else {
 		books, err = app.books.List()
-	}
-	if err != nil {
-		app.serverError(w, err)
-		return
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
 	}
 
 	isLibrarian := app.isLibrarian(r)
 	app.RenderPage(w, r, func(flash string, isAuthenticated bool, csrfToken string) templ.Component {
-		return pages.BookListPage(books, query, flash, isAuthenticated, isLibrarian, csrfToken)
+		return pages.BookListPage(books, query, sqlErr, flash, isAuthenticated, isLibrarian, csrfToken)
 	})
 }
 
